@@ -13,19 +13,29 @@ make clean                    # remove build artifacts
 
 ## Source Files
 
-| File | Description |
-|------|-------------|
-| `src/common.h` | Abstract `Scheduler` base class; defines `SimClient` and `STRIDE1 = 1<<20`. |
-| `src/lottery_scheduler_list.h/.cpp` | O(n) linear-scan lottery scheduler (paper §4.2). |
-| `src/lottery_scheduler_tree.h/.cpp` | O(log n) segment-tree lottery scheduler. |
-| `src/stride_scheduler.h/.cpp` | Dynamic stride scheduler with join/leave/modify and remain-rescaling (paper Fig. 3–5). |
-| `src/stride_scheduler_hierarchical.h/.cpp` | Hierarchical stride scheduler with O(log n_c) error bound (paper §4, Fig. 6–7). |
-| `src/event_simulator.h/.cpp` | Discrete-event engine; processes JOIN/LEAVE/MODIFY events and records per-quantum winners. |
-| `src/metrics.h/.cpp` | Computes absolute error, pairwise relative error, throughput ratio, jitter, and convergence windows. |
-| `src/main.cpp` | Defines and runs all 10 test scenarios. |
-| `Makefile` | Build rules for `scheduler_sim`. |
-| `test_summary.txt` | Narrative analysis: scenario descriptions, assumption validation, and per-scenario results. |
-| `results.txt` | Raw simulator output (regenerate with `make run FILE=results.txt`). |
+| File                                       | Description                                                                                          |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `src/common.h`                             | Abstract `Scheduler` base class; defines `SimClient` and `STRIDE1 = 1<<20`.                          |
+| `src/lottery_scheduler_list.h/.cpp`        | O(n) linear-scan lottery scheduler (paper §4.2).                                                     |
+| `src/lottery_scheduler_tree.h/.cpp`        | O(log n) segment-tree lottery scheduler.                                                             |
+| `src/stride_scheduler.h/.cpp`              | Dynamic stride scheduler with join/leave/modify and remain-rescaling (paper Fig. 3–5).               |
+| `src/stride_scheduler_hierarchical.h/.cpp` | Hierarchical stride scheduler with O(log n_c) error bound (paper §4, Fig. 6–7).                      |
+| `src/event_simulator.h/.cpp`               | Discrete-event engine; processes JOIN/LEAVE/MODIFY events and records per-quantum winners.           |
+| `src/metrics.h/.cpp`                       | Computes absolute error, pairwise relative error, throughput ratio, jitter, and convergence windows. |
+| `src/main.cpp`                             | Defines and runs all 10 test scenarios.                                                              |
+| `Makefile`                                 | Build rules for `scheduler_sim`.                                                                     |
+| `test_summary.txt`                         | Narrative analysis: scenario descriptions, assumption validation, and per-scenario results.          |
+| `results.txt`                              | Raw simulator output (regenerate with `make run FILE=results.txt`).                                  |
+
+## Metrics
+
+| Metric                  | Definition                                                                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------------------------------------------------------- |
+| Absolute error          | `                                                                                                                                        | wins_i - n_a × t_i/T                     | ` — deviation of a client's actual wins from its ticket-proportional share. |
+| Pairwise relative error | `max\_{i,j}                                                                                                                              | wins_i - (wins_i+wins_j) × t_i/(t_i+t_j) | ` — worst-case fairness violation across any pair of clients.               |
+| Throughput ratio        | `wins_i / n_active` — fraction of quanta awarded to client i while it is active.                                                         |
+| Jitter                  | Sample standard deviation of inter-allocation intervals, this measures how regularly a client receives service.                          |
+| Convergence windows     | Mean absolute error computed in successive fixed-width windows, this tracks how quickly each scheduler reaches steady-state proportions. |
 
 ## Test Scenarios
 
